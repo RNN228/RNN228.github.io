@@ -18,7 +18,7 @@
 --font-head:'Montserrat',sans-serif;
 --font-mono:'IBM Plex Mono',monospace;
 }
-html{scroll-behavior:smooth}
+html{scroll-behavior:auto}
 body{background:var(--bg);color:var(--white);font-family:var(--font-mono);line-height:1.6;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 img{display:block;width:100%;height:100%;object-fit:cover}
@@ -40,13 +40,13 @@ nav{position:fixed;top:0;left:0;width:100%;z-index:100;padding:20px 48px;display
 .hero-tag{padding:12px 28px;border:1px solid rgba(190,255,59,.2);font-size:.85rem;color:var(--lime);letter-spacing:3px;text-transform:uppercase;transition:background .3s}
 .hero-tag:hover{background:var(--lime-dim)}
 
-/* ── REVEAL ── */
-.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-d1{transition-delay:.1s}
-.reveal-d2{transition-delay:.2s}
-.reveal-d3{transition-delay:.3s}
-.reveal-d4{transition-delay:.4s}
+/* ── REVEAL (GSAP handles this now) ── */
+.reveal{opacity:0;transform:translateY(60px)}
+.hero-label,.hero-sub{opacity:0}
+.hero-tag{opacity:0;transform:translateY(30px)}
+.stat-num{opacity:0}
+.work-item{opacity:0;transform:scale(.88) translateY(40px)}
+.contact-card{opacity:0;transform:perspective(800px) rotateX(15deg) translateY(60px)}
 .hero-scroll{position:absolute;bottom:40px;left:48px;font-size:.7rem;color:var(--gray);letter-spacing:3px;text-transform:uppercase;writing-mode:vertical-lr}
 
 /* ── SECTION ── */
@@ -68,7 +68,7 @@ section{padding:120px 48px}
 .works-filter{display:flex;gap:8px;margin-bottom:48px;flex-wrap:wrap}
 .filter-btn{padding:10px 24px;border:1px solid rgba(190,255,59,.15);background:transparent;color:var(--gray);font-family:var(--font-mono);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s}
 .filter-btn:hover,.filter-btn.active{background:var(--lime);color:var(--bg);border-color:var(--lime)}
-.works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .work-item{position:relative;aspect-ratio:4/3;overflow:hidden;cursor:pointer}
 .work-item .work-placeholder{width:100%;height:100%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;transition:transform .5s}
 .work-item:hover .work-placeholder{transform:scale(1.05)}
@@ -119,6 +119,87 @@ footer{padding:20px 48px;display:flex;justify-content:space-between;align-items:
 .marquee-track span{font-family:var(--font-head);font-size:1rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;white-space:nowrap;color:rgba(190,255,59,.12)}
 @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
+/* ── CUSTOM CURSOR ── */
+.cursor{position:fixed;width:16px;height:16px;border:2px solid var(--lime);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s,background .3s}
+.cursor.hover{width:48px;height:48px;background:rgba(190,255,59,.1);border-color:var(--lime)}
+@media(pointer:coarse){.cursor{display:none}}
+
+/* ── GRAIN OVERLAY ── */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ── HERO LETTER SCATTER ── */
+.hero-name{cursor:default}
+.hero-char{display:inline-block;will-change:transform;transition:none;color:inherit;position:relative}
+.hero-char.lime{color:var(--lime)}
+.hero-char::after{content:attr(data-char);position:absolute;top:0;left:0;opacity:0;color:#0ff;pointer-events:none;filter:blur(2px)}
+.hero-name:hover .hero-char::after{animation:char-ghost .5s ease infinite alternate}
+@keyframes char-ghost{
+  0%{opacity:0;transform:translate(0)}
+  50%{opacity:.4;transform:translate(-3px,-2px)}
+  100%{opacity:0;transform:translate(3px,2px)}
+}
+
+/* SVG distortion filter */
+.hero-name-wrap{position:relative;display:inline-block}
+.hero-name-wrap.distort{filter:url(#turbulence-filter)}
+
+/* ── MAGNETIC ── */
+.magnetic{transition:transform .3s cubic-bezier(.23,1,.32,1)}
+
+/* ── LINE DRAW ── */
+.line{transform:scaleX(0);transform-origin:left}
+
+/* ── 3D TILT WORKS ── */
+.works-grid{perspective:1200px}
+.work-item{transform-style:preserve-3d;will-change:transform;transform-origin:center center}
+.work-item .work-placeholder{transition:transform .4s ease,box-shadow .4s ease}
+.work-glow{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .4s;border-radius:2px;z-index:1}
+
+/* ── STAT SLOT MACHINE ── */
+.stat-num{position:relative;overflow:hidden;height:3.2rem}
+.stat-slot{display:flex;flex-direction:column;position:absolute;top:0;left:0}
+.stat-slot .digit{height:3.2rem;display:flex;align-items:center;font-family:var(--font-head);font-size:2.5rem;font-weight:800;color:var(--lime)}
+
+/* ── CONTACT CARD LIQUID ── */
+.contact-card{overflow:hidden;transform-style:preserve-3d}
+.contact-card canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .5s;z-index:0}
+.contact-card:hover canvas{opacity:1}
+.contact-card>*:not(canvas){position:relative;z-index:1}
+
+/* ── SECTION TITLE REVEAL MASK ── */
+.section-title{position:relative;overflow:hidden}
+.title-mask{position:absolute;top:0;right:0;width:100%;height:100%;background:var(--bg);z-index:1}
+
+/* ── NAV LOGO GLITCH ── */
+.nav-logo{position:relative}
+.nav-logo::before,.nav-logo::after{content:'DRMN';position:absolute;top:0;left:0;opacity:0;pointer-events:none}
+.nav-logo::before{color:#0ff}
+.nav-logo::after{color:#f0f}
+.nav-logo:hover::before{opacity:.7;animation:logo-glitch-1 .3s steps(2) infinite}
+.nav-logo:hover::after{opacity:.7;animation:logo-glitch-2 .3s steps(2) infinite .05s}
+@keyframes logo-glitch-1{
+  0%{clip-path:inset(0 0 70% 0);transform:translate(-3px,-1px)}
+  25%{clip-path:inset(30% 0 40% 0);transform:translate(2px,1px)}
+  50%{clip-path:inset(60% 0 10% 0);transform:translate(-2px,0)}
+  75%{clip-path:inset(10% 0 60% 0);transform:translate(3px,-1px)}
+  100%{clip-path:inset(40% 0 30% 0);transform:translate(-1px,1px)}
+}
+@keyframes logo-glitch-2{
+  0%{clip-path:inset(70% 0 0 0);transform:translate(3px,1px)}
+  25%{clip-path:inset(40% 0 30% 0);transform:translate(-2px,-1px)}
+  50%{clip-path:inset(10% 0 60% 0);transform:translate(2px,0)}
+  75%{clip-path:inset(60% 0 10% 0);transform:translate(-3px,1px)}
+  100%{clip-path:inset(30% 0 40% 0);transform:translate(1px,-1px)}
+}
+
+/* ── FOOTER LOGO GLITCH ── */
+.footer-logo{position:relative;display:inline-block}
+.footer-logo::before,.footer-logo::after{content:'DRMN';position:absolute;top:0;left:0;opacity:0;pointer-events:none}
+.footer-logo::before{color:#0ff}
+.footer-logo::after{color:#f0f}
+.footer-logo:hover::before{opacity:.7;animation:logo-glitch-1 .3s steps(2) infinite}
+.footer-logo:hover::after{opacity:.7;animation:logo-glitch-2 .3s steps(2) infinite .05s}
+
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   nav{padding:16px 24px}
@@ -157,7 +238,16 @@ footer{padding:20px 48px;display:flex;justify-content:space-between;align-items:
 <!-- HERO -->
 <section class="hero">
   <div class="hero-label">Creative Designer</div>
-  <h1 class="hero-name">DORI<span>MENOS</span></h1>
+  <h1 class="hero-name" id="heroName">DORI<span>MENOS</span></h1>
+  <!-- SVG turbulence filter for distortion -->
+  <svg style="position:absolute;width:0;height:0">
+    <defs>
+      <filter id="turbulence-filter">
+        <feTurbulence id="turbNoise" type="fractalNoise" baseFrequency="0" numOctaves="1" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G" id="turbDisplace"/>
+      </filter>
+    </defs>
+  </svg>
   <p class="hero-sub">UI/UX, graphic design, game art, motion — crafting visual experiences that stand out.</p>
   <div class="hero-tags">
     <span class="hero-tag">UI / UX</span>
@@ -344,23 +434,419 @@ footer{padding:20px 48px;display:flex;justify-content:space-between;align-items:
   <span class="footer-copy">&copy; 2025 Dorimenos</span>
 </footer>
 
-<script>
-// Scroll reveal
-const observer=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}
-  });
-},{threshold:0.15});
-document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+<!-- Grain overlay -->
+<div class="grain"></div>
+<!-- Custom cursor -->
+<div class="cursor"></div>
 
-// Filter works
-document.querySelectorAll('.filter-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+<!-- GSAP + ScrollTrigger + Lenis -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+<script>
+// ── SMOOTH SCROLL (Lenis) ──
+const lenis = new Lenis({ lerp: 0.07, smoothWheel: true });
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time) => lenis.raf(time * 1000));
+gsap.ticker.lagSmoothing(0);
+
+// Nav links smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) lenis.scrollTo(target, { offset: -80 });
+  });
+});
+
+gsap.registerPlugin(ScrollTrigger);
+
+// ── CUSTOM CURSOR ──
+const cursor = document.querySelector('.cursor');
+let cursorX = 0, cursorY = 0;
+document.addEventListener('mousemove', e => { cursorX = e.clientX; cursorY = e.clientY; });
+gsap.ticker.add(() => {
+  gsap.set(cursor, { x: cursorX, y: cursorY });
+});
+document.querySelectorAll('a, button, .work-item, .contact-card').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+// ── MAGNETIC EFFECT ──
+document.querySelectorAll('.hero-tag, .filter-btn, .contact-card, .nav-links a, .footer-links a').forEach(el => {
+  el.classList.add('magnetic');
+  el.addEventListener('mousemove', e => {
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
+    gsap.to(el, { x, y, duration: 0.3, ease: 'power2.out' });
+  });
+  el.addEventListener('mouseleave', () => {
+    gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1,0.4)' });
+  });
+});
+
+// ── HERO ANIMATIONS ──
+const heroTL = gsap.timeline({ delay: 0.3 });
+
+// Label — text scramble
+heroTL.to('.hero-label', {
+  opacity: 1, duration: 0.8, ease: 'power2.out',
+  onStart: function() {
+    const el = document.querySelector('.hero-label');
+    const final = el.textContent;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
+    let iteration = 0;
+    const interval = setInterval(() => {
+      el.textContent = final.split('').map((ch, i) => {
+        if (i < iteration) return final[i];
+        return chars[Math.floor(Math.random() * chars.length)];
+      }).join('');
+      iteration += 1 / 2;
+      if (iteration >= final.length) { clearInterval(interval); el.textContent = final; }
+    }, 30);
+  }
+});
+
+// Sub
+heroTL.to('.hero-sub', {
+  opacity: 1, duration: 0.8, ease: 'power2.out'
+}, '-=0.2');
+
+// Tags
+heroTL.to('.hero-tag', {
+  opacity: 1, translateY: 0,
+  stagger: 0.1, duration: 0.6, ease: 'power3.out'
+}, '-=0.3');
+
+// ── HERO LETTER SCATTER ──
+const heroNameEl = document.getElementById('heroName');
+const heroText = 'DORIMENOS';
+const limeStart = 4; // "MENOS" starts at index 4
+
+// Split into individual letter spans
+heroNameEl.innerHTML = heroText.split('').map((ch, i) => {
+  const cls = i >= limeStart ? 'hero-char lime' : 'hero-char';
+  return `<span class="${cls}" data-char="${ch}">${ch}</span>`;
+}).join('');
+
+const heroChars = heroNameEl.querySelectorAll('.hero-char');
+let isHovering = false;
+let mouseX = 0, mouseY = 0;
+let rafId = null;
+
+// SVG turbulence refs
+const turbNoise = document.getElementById('turbNoise');
+const turbDisplace = document.getElementById('turbDisplace');
+
+heroNameEl.addEventListener('mouseenter', () => {
+  isHovering = true;
+  // Animate SVG turbulence in
+  gsap.to(turbNoise, { attr: { baseFrequency: 0.015 }, duration: 0.3 });
+  gsap.to(turbDisplace, { attr: { scale: 12 }, duration: 0.3 });
+  heroNameEl.style.filter = 'url(#turbulence-filter)';
+  animateScatter();
+});
+
+heroNameEl.addEventListener('mouseleave', () => {
+  isHovering = false;
+  // Snap back with elastic
+  heroChars.forEach(ch => {
+    gsap.to(ch, {
+      x: 0, y: 0, rotation: 0, scale: 1,
+      duration: 0.8, ease: 'elastic.out(1,0.3)',
+      delay: Math.random() * 0.1
+    });
+  });
+  // Fade out turbulence
+  gsap.to(turbNoise, { attr: { baseFrequency: 0 }, duration: 0.5 });
+  gsap.to(turbDisplace, { attr: { scale: 0 }, duration: 0.5, onComplete: () => {
+    heroNameEl.style.filter = 'none';
+  }});
+});
+
+heroNameEl.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+function animateScatter() {
+  if (!isHovering) return;
+
+  heroChars.forEach(ch => {
+    const rect = ch.getBoundingClientRect();
+    const charCX = rect.left + rect.width / 2;
+    const charCY = rect.top + rect.height / 2;
+
+    const dx = charCX - mouseX;
+    const dy = charCY - mouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const maxDist = 250;
+
+    if (dist < maxDist) {
+      const force = (1 - dist / maxDist) * 60;
+      const angle = Math.atan2(dy, dx);
+      const targetX = Math.cos(angle) * force;
+      const targetY = Math.sin(angle) * force;
+      const targetRot = (Math.random() - 0.5) * force * 0.8;
+      const targetScale = 1 + (1 - dist / maxDist) * 0.25;
+
+      gsap.to(ch, {
+        x: targetX, y: targetY,
+        rotation: targetRot,
+        scale: targetScale,
+        duration: 0.25, ease: 'power2.out', overwrite: true
+      });
+    } else {
+      gsap.to(ch, {
+        x: 0, y: 0, rotation: 0, scale: 1,
+        duration: 0.4, ease: 'power2.out', overwrite: true
+      });
+    }
+  });
+
+  // Jitter the turbulence seed for organic feel
+  turbNoise.setAttribute('seed', Math.floor(Math.random() * 100));
+
+  rafId = requestAnimationFrame(animateScatter);
+}
+
+// ── SECTION REVEALS ──
+document.querySelectorAll('section:not(.hero) .reveal').forEach(el => {
+  gsap.to(el, {
+    opacity: 1, y: 0,
+    duration: 0.9, ease: 'power3.out',
+    scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+  });
+});
+
+// ── LINE DRAW ──
+document.querySelectorAll('.line').forEach(line => {
+  gsap.to(line, {
+    scaleX: 1, duration: 1.2, ease: 'power2.inOut',
+    scrollTrigger: { trigger: line, start: 'top 90%', once: true }
+  });
+});
+
+// ── STAT SLOT MACHINE ──
+document.querySelectorAll('.stat-num').forEach(el => {
+  const text = el.textContent.trim();
+  const num = parseInt(text);
+  const suffix = text.replace(/[0-9]/g, '');
+
+  // Build slot: random digits then final number
+  const totalSlots = 12;
+  let slotHTML = '';
+  for (let i = 0; i < totalSlots; i++) {
+    const val = i < totalSlots - 1 ? Math.floor(Math.random() * 99) : num;
+    slotHTML += `<div class="digit">${val}${suffix}</div>`;
+  }
+  el.innerHTML = `<div class="stat-slot">${slotHTML}</div>`;
+  const slot = el.querySelector('.stat-slot');
+
+  ScrollTrigger.create({
+    trigger: el, start: 'top 85%', once: true,
+    onEnter: () => {
+      gsap.to(el, { opacity: 1, duration: 0.2 });
+      const digitH = 3.2 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+      gsap.to(slot, {
+        y: -(totalSlots - 1) * digitH,
+        duration: 1.8,
+        ease: 'power4.out'
+      });
+    }
+  });
+});
+
+// ── WORKS STAGGERED REVEAL ──
+ScrollTrigger.batch('.work-item', {
+  start: 'top 88%',
+  once: true,
+  onEnter: batch => {
+    gsap.to(batch, {
+      opacity: 1, scale: 1, y: 0,
+      stagger: 0.08, duration: 0.7, ease: 'power3.out'
+    });
+  }
+});
+
+// ── WORKS 3D TILT + GLOW ──
+document.querySelectorAll('.work-item').forEach(item => {
+  // Add glow element
+  const glow = document.createElement('div');
+  glow.className = 'work-glow';
+  item.appendChild(glow);
+
+  item.addEventListener('mousemove', e => {
+    const rect = item.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    const rotY = (x - 0.5) * 20;
+    const rotX = (0.5 - y) * 20;
+
+    gsap.to(item, {
+      rotateX: rotX, rotateY: rotY,
+      duration: 0.4, ease: 'power2.out', overwrite: true
+    });
+
+    // Move glow to follow cursor
+    glow.style.opacity = 1;
+    glow.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(190,255,59,.2) 0%, transparent 60%)`;
+  });
+
+  item.addEventListener('mouseleave', () => {
+    gsap.to(item, {
+      rotateX: 0, rotateY: 0,
+      duration: 0.6, ease: 'elastic.out(1,0.5)', overwrite: true
+    });
+    glow.style.opacity = 0;
+  });
+});
+
+// ── CONTACT CARDS 3D REVEAL ──
+ScrollTrigger.batch('.contact-card', {
+  start: 'top 85%',
+  once: true,
+  onEnter: batch => {
+    gsap.to(batch, {
+      opacity: 1, rotateX: 0, y: 0,
+      stagger: 0.12, duration: 0.9, ease: 'power3.out'
+    });
+  }
+});
+
+// ── CONTACT CARDS LIQUID RIPPLE ──
+document.querySelectorAll('.contact-card').forEach(card => {
+  const canvas = document.createElement('canvas');
+  card.insertBefore(canvas, card.firstChild);
+  const ctx = canvas.getContext('2d');
+  let animFrame, ripples = [];
+
+  function resizeCanvas() {
+    const rect = card.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+  }
+
+  card.addEventListener('mouseenter', e => {
+    resizeCanvas();
+    ripples = [];
+    const rect = card.getBoundingClientRect();
+    ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, r: 0, alpha: 1 });
+    drawRipples();
+  });
+
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    if (Math.random() > 0.6) {
+      ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, r: 0, alpha: 0.6 });
+    }
+  });
+
+  card.addEventListener('mouseleave', () => {
+    cancelAnimationFrame(animFrame);
+    ripples = [];
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+
+  function drawRipples() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ripples.forEach((rip, i) => {
+      rip.r += 2.5;
+      rip.alpha *= 0.96;
+      if (rip.alpha < 0.01) { ripples.splice(i, 1); return; }
+      ctx.beginPath();
+      ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(190,255,59,${rip.alpha * 0.4})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Inner fill
+      ctx.beginPath();
+      ctx.arc(rip.x, rip.y, rip.r * 0.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(190,255,59,${rip.alpha * 0.06})`;
+      ctx.fill();
+    });
+    if (ripples.length) animFrame = requestAnimationFrame(drawRipples);
+  }
+});
+
+// ── SECTION TITLE WIPE REVEAL ──
+document.querySelectorAll('.section-title').forEach(title => {
+  const mask = document.createElement('div');
+  mask.className = 'title-mask';
+  title.appendChild(mask);
+
+  ScrollTrigger.create({
+    trigger: title, start: 'top 80%', once: true,
+    onEnter: () => {
+      gsap.to(mask, {
+        width: '0%', duration: 1.2, ease: 'power4.inOut',
+        delay: 0.2
+      });
+    }
+  });
+});
+
+// ── ABOUT TEXT LINE-BY-LINE GLOW ──
+document.querySelectorAll('.about-text p').forEach(p => {
+  p.addEventListener('mouseenter', () => {
+    gsap.to(p, { color: 'var(--white)', x: 8, duration: 0.3, ease: 'power2.out' });
+  });
+  p.addEventListener('mouseleave', () => {
+    gsap.to(p, { color: 'var(--gray)', x: 0, duration: 0.4, ease: 'power2.out' });
+  });
+});
+
+// ── PARALLAX on section labels ──
+document.querySelectorAll('.section-label, .section-title, .contact-mega').forEach(el => {
+  gsap.to(el, {
+    yPercent: -15,
+    scrollTrigger: {
+      trigger: el, start: 'top bottom', end: 'bottom top',
+      scrub: 1
+    }
+  });
+});
+
+// ── NAV HIDE/SHOW on scroll ──
+let lastScroll = 0;
+ScrollTrigger.create({
+  onUpdate: self => {
+    const nav = document.querySelector('nav');
+    if (self.direction === 1 && self.scroll() > 200) {
+      gsap.to(nav, { y: -100, duration: 0.4, ease: 'power2.in' });
+    } else {
+      gsap.to(nav, { y: 0, duration: 0.3, ease: 'power2.out' });
+    }
+  }
+});
+
+// ── MARQUEE speed on scroll ──
+document.querySelectorAll('.marquee-track').forEach(track => {
+  gsap.to(track, {
+    xPercent: -3,
+    scrollTrigger: {
+      trigger: track.parentElement,
+      start: 'top bottom', end: 'bottom top',
+      scrub: 0.5
+    }
+  });
+});
+
+// ── FILTER WORKS ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    const f=btn.dataset.filter;
-    document.querySelectorAll('.work-item').forEach(item=>{
-      item.style.display=(f==='all'||item.dataset.cat===f)?'block':'none';
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.work-item').forEach(item => {
+      if (f === 'all' || item.dataset.cat === f) {
+        gsap.to(item, { opacity: 1, scale: 1, display: 'block', duration: 0.4, ease: 'power2.out' });
+      } else {
+        gsap.to(item, { opacity: 0, scale: 0.9, duration: 0.3, ease: 'power2.in', onComplete: () => item.style.display = 'none' });
+      }
     });
   });
 });

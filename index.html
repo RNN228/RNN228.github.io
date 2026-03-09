@@ -5,231 +5,218 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DRMN — Dorimenos Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
---bg:#0B0F19;
---bg-alt:#0F1424;
+--bg:#08090E;
+--bg2:#0a0c14;
+--bg3:#0e1018;
 --lime:#BEFF3B;
---lime-dim:rgba(190,255,59,.1);
---white:#F0F0F0;
---gray:#8A8F9E;
---font-head:'Montserrat',sans-serif;
---font-mono:'IBM Plex Mono',monospace;
+--lime-dim:rgba(190,255,59,.08);
+--amber:#F59E0B;
+--amber-dim:rgba(245,158,11,.08);
+--white:#EAEAEA;
+--gray:#6B7084;
+--font-head:'Syne',sans-serif;
+--font-body:'Space Grotesk',sans-serif;
 }
 html{scroll-behavior:auto}
-body{background:var(--bg);color:var(--white);font-family:var(--font-mono);line-height:1.6;overflow-x:hidden}
+body{background:var(--bg);color:var(--white);font-family:var(--font-body);line-height:1.6;overflow-x:hidden}
+body.loading{overflow:hidden}
 a{color:inherit;text-decoration:none}
 img{display:block;width:100%;height:100%;object-fit:cover}
 
+/* ── PRELOADER ── */
+.preloader{position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden}
+.preloader-logo{font-family:var(--font-head);font-weight:800;font-size:clamp(3rem,8vw,5.5rem);letter-spacing:8px;display:flex;gap:2px}
+.preloader-logo .pl-char{opacity:0;color:var(--lime);text-shadow:0 0 0 transparent;display:inline-block}
+.preloader-curtain-l,.preloader-curtain-r{position:absolute;top:0;width:50%;height:100%;background:var(--bg);z-index:1}
+.preloader-curtain-l{left:0}
+.preloader-curtain-r{right:0}
+.preloader-center{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+
+/* ── SCROLL PROGRESS ── */
+.scroll-progress{position:fixed;top:0;left:0;width:0;height:2px;background:var(--lime);z-index:10001;box-shadow:0 0 12px rgba(190,255,59,.4)}
+
+/* ── BLOBS ── */
+.blobs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(140px);will-change:transform}
+.blob-1{width:600px;height:600px;background:var(--lime);top:-10%;left:-5%;opacity:.07}
+.blob-2{width:500px;height:500px;background:var(--amber);top:50%;right:-10%;opacity:.04}
+.blob-3{width:450px;height:450px;background:var(--amber);bottom:-5%;left:25%;opacity:.04}
+
+/* ── PARTICLES (embers) ── */
+.particles{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}
+.particle{position:absolute;border-radius:50%;opacity:0;will-change:transform;box-shadow:0 0 6px currentColor}
+
+/* ── GRAIN ── */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ── CURSOR ── */
+.cursor{position:fixed;width:16px;height:16px;border:1.5px solid var(--lime);border-radius:50%;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s,border-color .3s;mix-blend-mode:difference}
+.cursor.hover{width:56px;height:56px;background:rgba(190,255,59,.1);border-color:var(--amber)}
+.cursor-trail{position:fixed;width:4px;height:4px;background:var(--lime);border-radius:50%;pointer-events:none;z-index:9999;opacity:.3;transform:translate(-50%,-50%)}
+@media(pointer:coarse){.cursor,.cursor-trail{display:none}}
+
 /* ── NAV ── */
-nav{position:fixed;top:0;left:0;width:100%;z-index:100;padding:20px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(11,15,25,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(190,255,59,.08)}
-.nav-logo{font-family:var(--font-head);font-weight:900;font-size:1.3rem;letter-spacing:4px;color:var(--lime)}
+nav{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:20px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(8,9,14,.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(190,255,59,.04)}
+.nav-logo{font-family:var(--font-head);font-weight:800;font-size:1.3rem;letter-spacing:4px;color:var(--lime);position:relative;cursor:default}
 .nav-links{display:flex;gap:32px;font-size:.8rem;letter-spacing:1px;text-transform:uppercase}
-.nav-links a{color:var(--gray);transition:color .3s}
+.nav-links a{color:var(--gray);transition:color .3s;position:relative}
 .nav-links a:hover{color:var(--lime)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--lime);transition:width .3s}
+.nav-links a:hover::after{width:100%}
 
 /* ── HERO ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:200px 64px 120px}
-.hero-label{font-size:1rem;color:var(--lime);letter-spacing:8px;text-transform:uppercase;margin-bottom:32px}
-.hero-name{font-family:var(--font-head);font-size:clamp(4.5rem,12vw,11rem);font-weight:900;line-height:.9;letter-spacing:-4px;margin-bottom:40px}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:120px 64px 120px;position:relative;z-index:2}
+.fixed-labels{position:fixed;bottom:32px;left:64px;right:64px;display:flex;justify-content:space-between;z-index:10000;pointer-events:none}
+.fixed-label{font-family:var(--font-body);font-size:.75rem;color:var(--amber);letter-spacing:6px;text-transform:uppercase;font-weight:700;opacity:0}
+.hero-name{font-family:var(--font-head);font-size:clamp(4.5rem,8vw,11rem);font-weight:800;line-height:.88;letter-spacing:-4px;transform:scaleY(1.25);margin-bottom:40px;cursor:default;text-align:center}
 .hero-name span{color:var(--lime)}
-.hero-sub{font-size:1.25rem;color:var(--gray);max-width:600px;margin-bottom:64px;line-height:1.7}
-.hero-tags{display:flex;gap:16px;flex-wrap:wrap}
-.hero-tag{padding:12px 28px;border:1px solid rgba(190,255,59,.2);font-size:.85rem;color:var(--lime);letter-spacing:3px;text-transform:uppercase;transition:background .3s}
-.hero-tag:hover{background:var(--lime-dim)}
+.hero-scroll{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);font-size:.65rem;color:var(--gray);letter-spacing:3px;text-transform:uppercase;writing-mode:vertical-lr;opacity:0}
+.hero-scroll::before{content:'';display:block;width:1px;height:60px;background:linear-gradient(var(--lime),transparent);margin:0 auto 12px;animation:scroll-line 2s ease infinite}
+@keyframes scroll-line{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* ── REVEAL (GSAP handles this now) ── */
+/* ── LETTER SCATTER ── */
+.scatter-char{display:inline-block;will-change:transform;transition:none;color:inherit;position:relative}
+.scatter-char.lime{color:var(--lime)}
+.scatter-char::after{content:attr(data-char);position:absolute;top:0;left:0;opacity:0;color:var(--amber);pointer-events:none;filter:blur(3px)}
+.hero-name:hover .scatter-char::after,.nav-logo:hover .scatter-char::after,.footer-logo:hover .scatter-char::after{animation:char-ghost .5s ease infinite alternate}
+@keyframes char-ghost{0%{opacity:0;transform:translate(0)}50%{opacity:.3;transform:translate(-4px,-3px)}100%{opacity:0;transform:translate(4px,3px)}}
+
+/* ── SECTIONS ── */
+section{padding:140px 48px;position:relative;z-index:2}
+.section-label{font-family:var(--font-body);font-size:.7rem;color:var(--amber);letter-spacing:5px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-family:var(--font-head);font-size:clamp(2rem,4vw,3.5rem);font-weight:800;margin-bottom:56px;position:relative;overflow:hidden;transform:scaleY(1.25)}
+.section-title .dim{color:var(--gray)}
+.section-title .lime{color:var(--lime)}
+.title-mask{position:absolute;top:0;right:0;width:100%;height:100%;background:var(--bg);z-index:1}
+.line{width:100%;height:1px;background:var(--lime);margin:0;transform:scaleX(0);transform-origin:left;opacity:.2}
 .reveal{opacity:0;transform:translateY(60px)}
-.hero-label,.hero-sub{opacity:0}
-.hero-tag{opacity:0;transform:translateY(30px)}
-.stat-num{opacity:0}
-.work-item{opacity:0;transform:scale(.88) translateY(40px)}
-.contact-card{opacity:0;transform:perspective(800px) rotateX(15deg) translateY(60px)}
-.hero-scroll{position:absolute;bottom:40px;left:48px;font-size:.7rem;color:var(--gray);letter-spacing:3px;text-transform:uppercase;writing-mode:vertical-lr}
 
-/* ── SECTION ── */
-section{padding:120px 48px}
-.section-label{font-size:.7rem;color:var(--lime);letter-spacing:6px;text-transform:uppercase;margin-bottom:12px}
-.section-title{font-family:var(--font-head);font-size:clamp(2rem,4vw,3.5rem);font-weight:800;margin-bottom:48px}
-.line{width:100%;height:1px;background:rgba(190,255,59,.1);margin:0}
 
-/* ── ABOUT ── */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:350px;align-items:start}
-.about-text{font-size:.95rem;color:var(--gray);line-height:1.8;max-width:700px}
-.about-text p+p{margin-top:20px}
-.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:32px}
-.stat{padding:24px 0;border-top:1px solid rgba(190,255,59,.15)}
-.stat-num{font-family:var(--font-head);font-size:2.5rem;font-weight:800;color:var(--lime)}
-.stat-label{font-size:.75rem;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+/* ── HORIZONTAL WORKS ── */
+.works-section{overflow:hidden;padding:0;background:var(--bg)}
+.works-header{padding:140px 48px 60px;position:relative;z-index:2}
+.works-track-wrap{position:relative;overflow:visible}
+.works-track{display:flex;gap:32px;padding:0 48px 100px;will-change:transform}
+.work-card{flex:none;width:70vw;max-width:900px;position:relative;overflow:hidden;cursor:pointer}
+.work-card-inner{aspect-ratio:16/10;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all .4s}
+.work-card-inner span{font-size:.7rem;color:var(--gray);letter-spacing:3px;text-transform:uppercase;z-index:1}
+.work-card-glow{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .4s;z-index:2}
+.work-card-info{padding:20px 0;display:flex;justify-content:space-between;align-items:center}
+.work-card-cat{font-size:.6rem;color:var(--amber);letter-spacing:3px;text-transform:uppercase}
+.work-card-title{font-family:var(--font-head);font-size:1.3rem;font-weight:700;margin-top:4px}
+.work-card-num{font-family:var(--font-head);font-size:3rem;font-weight:800;color:rgba(190,255,59,.04);letter-spacing:4px}
+.works-counter{position:absolute;bottom:40px;right:48px;font-family:var(--font-body);font-size:.8rem;color:var(--gray);letter-spacing:2px;z-index:2}
+.works-counter .current{color:var(--lime);font-weight:700;font-size:1.1rem}
 
-/* ── WORKS ── */
-.works-filter{display:flex;gap:8px;margin-bottom:48px;flex-wrap:wrap}
-.filter-btn{padding:10px 24px;border:1px solid rgba(190,255,59,.15);background:transparent;color:var(--gray);font-family:var(--font-mono);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s}
-.filter-btn:hover,.filter-btn.active{background:var(--lime);color:var(--bg);border-color:var(--lime)}
-.works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.work-item{position:relative;aspect-ratio:4/3;overflow:hidden;cursor:pointer}
-.work-item .work-placeholder{width:100%;height:100%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;transition:transform .5s}
-.work-item:hover .work-placeholder{transform:scale(1.05)}
-.work-item .work-placeholder span{font-size:.7rem;color:var(--gray);letter-spacing:3px;text-transform:uppercase}
-.work-overlay{position:absolute;inset:0;background:rgba(11,15,25,.85);display:flex;flex-direction:column;justify-content:flex-end;padding:24px;opacity:0;transition:opacity .4s}
-.work-item:hover .work-overlay{opacity:1}
-.work-overlay .work-cat{font-size:.65rem;color:var(--lime);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
-.work-overlay .work-title{font-family:var(--font-head);font-size:1.1rem;font-weight:700}
-
-/* ── SERVICES ── */
-.services-list{display:grid;gap:0}
-.service-item{display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:32px;padding:32px 0;border-bottom:1px solid rgba(190,255,59,.08);transition:background .3s;cursor:default}
-.service-item:first-child{border-top:1px solid rgba(190,255,59,.08)}
-.service-item:hover{background:var(--lime-dim);padding-left:16px;padding-right:16px}
-.service-num{font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:rgba(190,255,59,.3)}
-.service-info h3{font-family:var(--font-head);font-size:1.3rem;font-weight:700;margin-bottom:4px}
-.service-info p{font-size:.8rem;color:var(--gray)}
-.service-arrow{font-size:1.5rem;color:var(--lime);opacity:0;transition:opacity .3s}
-.service-item:hover .service-arrow{opacity:1}
 
 /* ── CONTACT ── */
-.contact-section{padding:120px 48px 0;position:relative}
-.contact-mega{font-family:var(--font-head);font-size:clamp(2rem,5vw,5rem);font-weight:900;line-height:1;letter-spacing:-2px;text-align:center;margin-bottom:64px}
+.contact-section{padding:140px 48px 80px;position:relative;z-index:2;background:var(--bg2)}
+.contact-mega{font-family:var(--font-head);font-size:clamp(2rem,5vw,4.5rem);font-weight:800;line-height:1.1;letter-spacing:-2px;text-align:center;margin-bottom:72px;transform:scaleY(1.25)}
 .contact-mega .lime{color:var(--lime)}
-.contact-mega .outline{color:var(--lime)}
-.contact-channels{display:flex;justify-content:center;gap:0;margin-bottom:80px}
-.contact-card{flex:1;max-width:320px;padding:40px;border:1px solid rgba(190,255,59,.08);border-right:none;position:relative;transition:background .4s,transform .4s;cursor:pointer;text-decoration:none;display:block}
-.contact-card:last-child{border-right:1px solid rgba(190,255,59,.08)}
-.contact-card:hover{background:var(--lime);transform:translateY(-8px)}
+.contact-mega .amber{color:var(--amber)}
+.contact-channels{display:flex;justify-content:center;gap:0;margin-bottom:0}
+.contact-card{flex:1;max-width:320px;padding:40px;border:1px solid rgba(190,255,59,.06);border-right:none;position:relative;cursor:pointer;text-decoration:none;display:block;overflow:hidden;transform-style:preserve-3d;opacity:0;transform:perspective(800px) rotateX(15deg) translateY(60px);transition:background .4s,transform .4s}
+.contact-card:last-child{border-right:1px solid rgba(190,255,59,.06)}
+.contact-card:hover{background:var(--lime);transform:translateY(-8px)!important}
 .contact-card:hover *{color:var(--bg)!important}
-.cc-icon{font-size:2rem;margin-bottom:24px;color:var(--lime);transition:color .4s}
-.cc-label{font-size:.65rem;letter-spacing:4px;text-transform:uppercase;color:var(--gray);margin-bottom:8px;transition:color .4s}
-.cc-value{font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:var(--white);transition:color .4s}
-.cc-arrow{position:absolute;top:40px;right:40px;font-size:1.2rem;color:var(--lime);opacity:0;transition:opacity .4s,color .4s,transform .4s}
-.contact-card:hover .cc-arrow{opacity:1;transform:translate(4px,-4px)}
-
-/* ── FOOTER ── */
-footer{padding:20px 48px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(190,255,59,.08);background:rgba(11,15,25,.85);backdrop-filter:blur(12px)}
-.footer-logo{font-family:var(--font-head);font-weight:900;font-size:1.3rem;letter-spacing:4px;color:var(--lime)}
-.footer-links{display:flex;gap:32px;font-size:.8rem;letter-spacing:1px;text-transform:uppercase}
-.footer-links a{color:var(--gray);transition:color .3s}
-.footer-links a:hover{color:var(--lime)}
-.footer-copy{font-size:.75rem;color:var(--gray);letter-spacing:1px}
-
-/* ── MARQUEE ── */
-.marquee-strip{overflow:hidden;padding:20px 0;border-top:1px solid rgba(190,255,59,.06);border-bottom:1px solid rgba(190,255,59,.06)}
-.marquee-track{display:flex;gap:48px;animation:marquee 20s linear infinite;width:max-content}
-.marquee-track span{font-family:var(--font-head);font-size:1rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;white-space:nowrap;color:rgba(190,255,59,.12)}
-@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-
-/* ── CUSTOM CURSOR ── */
-.cursor{position:fixed;width:16px;height:16px;border:2px solid var(--lime);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s,background .3s}
-.cursor.hover{width:48px;height:48px;background:rgba(190,255,59,.1);border-color:var(--lime)}
-@media(pointer:coarse){.cursor{display:none}}
-
-/* ── GRAIN OVERLAY ── */
-.grain{position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-
-/* ── HERO LETTER SCATTER ── */
-.hero-name{cursor:default}
-.hero-char{display:inline-block;will-change:transform;transition:none;color:inherit;position:relative}
-.hero-char.lime{color:var(--lime)}
-.hero-char::after{content:attr(data-char);position:absolute;top:0;left:0;opacity:0;color:#0ff;pointer-events:none;filter:blur(2px)}
-.hero-name:hover .hero-char::after{animation:char-ghost .5s ease infinite alternate}
-@keyframes char-ghost{
-  0%{opacity:0;transform:translate(0)}
-  50%{opacity:.4;transform:translate(-3px,-2px)}
-  100%{opacity:0;transform:translate(3px,2px)}
-}
-
-/* SVG distortion filter */
-.hero-name-wrap{position:relative;display:inline-block}
-.hero-name-wrap.distort{filter:url(#turbulence-filter)}
-
-/* ── MAGNETIC ── */
-.magnetic{transition:transform .3s cubic-bezier(.23,1,.32,1)}
-
-/* ── LINE DRAW ── */
-.line{transform:scaleX(0);transform-origin:left}
-
-/* ── 3D TILT WORKS ── */
-.works-grid{perspective:1200px}
-.work-item{transform-style:preserve-3d;will-change:transform;transform-origin:center center}
-.work-item .work-placeholder{transition:transform .4s ease,box-shadow .4s ease}
-.work-glow{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .4s;border-radius:2px;z-index:1}
-
-/* ── STAT SLOT MACHINE ── */
-.stat-num{position:relative;overflow:hidden;height:3.2rem}
-.stat-slot{display:flex;flex-direction:column;position:absolute;top:0;left:0}
-.stat-slot .digit{height:3.2rem;display:flex;align-items:center;font-family:var(--font-head);font-size:2.5rem;font-weight:800;color:var(--lime)}
-
-/* ── CONTACT CARD LIQUID ── */
-.contact-card{overflow:hidden;transform-style:preserve-3d}
+.contact-card:nth-child(2){border-color:rgba(190,255,59,.06)}
+.contact-card:nth-child(2):hover{background:var(--lime)}
+.contact-card:nth-child(3){border-color:rgba(190,255,59,.06)}
+.contact-card:nth-child(3):hover{background:var(--lime)}
 .contact-card canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .5s;z-index:0}
 .contact-card:hover canvas{opacity:1}
 .contact-card>*:not(canvas){position:relative;z-index:1}
+.cc-icon{font-size:1.8rem;margin-bottom:24px;color:var(--lime);transition:color .4s}
+.contact-card:nth-child(2) .cc-icon{color:var(--lime)}
+.contact-card:nth-child(3) .cc-icon{color:var(--lime)}
+.cc-label{font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--gray);margin-bottom:8px;transition:color .4s}
+.cc-value{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--white);transition:color .4s}
+.cc-arrow{position:absolute;top:40px;right:40px;font-size:1.2rem;color:var(--lime);opacity:0;transition:opacity .4s,color .4s,transform .4s}
+.contact-card:nth-child(2) .cc-arrow{color:var(--lime)}
+.contact-card:nth-child(3) .cc-arrow{color:var(--lime)}
+.contact-card:hover .cc-arrow{opacity:1;transform:translate(4px,-4px)}
 
-/* ── SECTION TITLE REVEAL MASK ── */
-.section-title{position:relative;overflow:hidden}
-.title-mask{position:absolute;top:0;right:0;width:100%;height:100%;background:var(--bg);z-index:1}
+/* ── CINEMATIC FOOTER ── */
+.footer-big{position:relative;z-index:2;overflow:hidden;padding:120px 48px 0;background:var(--bg)}
+.footer-big-text{font-family:var(--font-head);font-size:clamp(5rem,15vw,16rem);font-weight:800;text-align:center;color:var(--bg);text-shadow:-1px -1px 0 rgba(190,255,59,.08),1px -1px 0 rgba(190,255,59,.08),-1px 1px 0 rgba(190,255,59,.08),1px 1px 0 rgba(190,255,59,.08);line-height:.85;letter-spacing:-6px;user-select:none;position:relative;cursor:default}
+.footer-bottom{position:relative;z-index:2;padding:32px 48px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(190,255,59,.04);background:var(--bg)}
+.footer-logo{font-family:var(--font-head);font-weight:800;font-size:1.3rem;letter-spacing:4px;color:var(--lime);position:relative;display:inline-block;cursor:default}
+.footer-links{display:flex;gap:32px;font-size:.8rem;letter-spacing:1px;text-transform:uppercase}
+.footer-links a{color:var(--gray);transition:color .3s;position:relative}
+.footer-links a:hover{color:var(--lime)}
+.footer-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--lime);transition:width .3s}
+.footer-links a:hover::after{width:100%}
+.footer-copy{font-size:.7rem;color:var(--gray);letter-spacing:1px}
 
-/* ── NAV LOGO GLITCH ── */
-.nav-logo{position:relative}
-.nav-logo::before,.nav-logo::after{content:'DRMN';position:absolute;top:0;left:0;opacity:0;pointer-events:none}
-.nav-logo::before{color:#0ff}
-.nav-logo::after{color:#f0f}
-.nav-logo:hover::before{opacity:.7;animation:logo-glitch-1 .3s steps(2) infinite}
-.nav-logo:hover::after{opacity:.7;animation:logo-glitch-2 .3s steps(2) infinite .05s}
-@keyframes logo-glitch-1{
-  0%{clip-path:inset(0 0 70% 0);transform:translate(-3px,-1px)}
-  25%{clip-path:inset(30% 0 40% 0);transform:translate(2px,1px)}
-  50%{clip-path:inset(60% 0 10% 0);transform:translate(-2px,0)}
-  75%{clip-path:inset(10% 0 60% 0);transform:translate(3px,-1px)}
-  100%{clip-path:inset(40% 0 30% 0);transform:translate(-1px,1px)}
-}
-@keyframes logo-glitch-2{
-  0%{clip-path:inset(70% 0 0 0);transform:translate(3px,1px)}
-  25%{clip-path:inset(40% 0 30% 0);transform:translate(-2px,-1px)}
-  50%{clip-path:inset(10% 0 60% 0);transform:translate(2px,0)}
-  75%{clip-path:inset(60% 0 10% 0);transform:translate(-3px,1px)}
-  100%{clip-path:inset(30% 0 40% 0);transform:translate(1px,-1px)}
-}
-
-/* ── FOOTER LOGO GLITCH ── */
-.footer-logo{position:relative;display:inline-block}
-.footer-logo::before,.footer-logo::after{content:'DRMN';position:absolute;top:0;left:0;opacity:0;pointer-events:none}
-.footer-logo::before{color:#0ff}
-.footer-logo::after{color:#f0f}
-.footer-logo:hover::before{opacity:.7;animation:logo-glitch-1 .3s steps(2) infinite}
-.footer-logo:hover::after{opacity:.7;animation:logo-glitch-2 .3s steps(2) infinite .05s}
+/* ── MAGNETIC ── */
+.magnetic{transition:transform .3s cubic-bezier(.23,1,.32,1)}
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   nav{padding:16px 24px}
   .nav-links{display:none}
   .hero{padding:100px 24px}
-  .contact-section{padding:80px 24px 0}
+  section{padding:100px 24px}
+  .works-header{padding:100px 24px 40px}
+  .works-track{padding:0 24px 80px}
+  .work-card{width:85vw}
+  .contact-section{padding:100px 24px 60px}
   .contact-channels{flex-direction:column;align-items:center}
-  .contact-card{max-width:100%;border-right:1px solid rgba(190,255,59,.08)!important;border-bottom:none}
-  .contact-card:last-child{border-bottom:1px solid rgba(190,255,59,.08)}
-  footer{padding:16px 24px}
+  .contact-card{max-width:100%;border-right:1px solid rgba(190,255,59,.06)!important;border-bottom:none}
+  .contact-card:last-child{border-bottom:1px solid rgba(190,255,59,.06)}
+  .footer-big{padding:80px 24px 0}
+  .footer-bottom{padding:24px;flex-wrap:wrap;gap:16px}
   .footer-links{display:none}
-  section{padding:80px 24px}
-  .about-grid{grid-template-columns:1fr}
-  .works-grid{grid-template-columns:1fr 1fr}
   .hero-name{font-size:clamp(2.5rem,10vw,4rem)}
-}
-@media(max-width:600px){
-  .works-grid{grid-template-columns:1fr}
-  .service-item{grid-template-columns:40px 1fr}
-  .service-arrow{display:none}
 }
 </style>
 </head>
-<body>
+<body class="loading">
+
+<!-- PRELOADER -->
+<div class="preloader" id="preloader">
+  <div class="preloader-curtain-l" id="curtainL"></div>
+  <div class="preloader-curtain-r" id="curtainR"></div>
+  <div class="preloader-center">
+    <div class="preloader-logo" id="preloaderLogo">
+      <span class="pl-char">D</span><span class="pl-char">R</span><span class="pl-char">M</span><span class="pl-char">N</span>
+    </div>
+  </div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- BLOBS -->
+<div class="blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- GRAIN -->
+<div class="grain"></div>
+
+<!-- FIXED LABELS -->
+<div class="fixed-labels">
+  <div class="fixed-label">Creative</div>
+  <div class="fixed-label">Designer</div>
+</div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
 
 <!-- NAV -->
-<nav>
+<nav id="mainNav">
   <a href="#" class="nav-logo">DRMN</a>
   <div class="nav-links">
-    <a href="#about">About</a>
     <a href="#works">Works</a>
     <a href="#contact">Contact</a>
   </div>
@@ -237,9 +224,7 @@ footer{padding:20px 48px;display:flex;justify-content:space-between;align-items:
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-label">Creative Designer</div>
   <h1 class="hero-name" id="heroName">DORI<span>MENOS</span></h1>
-  <!-- SVG turbulence filter for distortion -->
   <svg style="position:absolute;width:0;height:0">
     <defs>
       <filter id="turbulence-filter">
@@ -248,173 +233,84 @@ footer{padding:20px 48px;display:flex;justify-content:space-between;align-items:
       </filter>
     </defs>
   </svg>
-  <p class="hero-sub">UI/UX, graphic design, game art, motion — crafting visual experiences that stand out.</p>
-  <div class="hero-tags">
-    <span class="hero-tag">UI / UX</span>
-    <span class="hero-tag">Graphic Design</span>
-    <span class="hero-tag">Game Dev Art</span>
-    <span class="hero-tag">Motion Design</span>
-  </div>
-</section>
-
-<!-- MARQUEE -->
-<div class="marquee-strip">
-  <div class="marquee-track">
-    <span>DRMN</span><span>UI/UX</span><span>BRANDING</span><span>MOTION</span><span>GAMEDEV</span><span>GRAPHIC DESIGN</span><span>ILLUSTRATION</span><span>VISUAL IDENTITY</span>
-    <span>DRMN</span><span>UI/UX</span><span>BRANDING</span><span>MOTION</span><span>GAMEDEV</span><span>GRAPHIC DESIGN</span><span>ILLUSTRATION</span><span>VISUAL IDENTITY</span>
-  </div>
-</div>
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="section-label reveal">// 01 — About</div>
-  <h2 class="section-title reveal reveal-d1">Who I Am</h2>
-  <div class="about-grid">
-    <div class="about-text reveal reveal-d2">
-      <p>Dorimenos — дизайнер с фокусом на визуальное повествование. Работаю на стыке UI/UX, графического дизайна, геймдева и motion. Создаю проекты, которые цепляют взгляд и решают задачи бизнеса.</p>
-      <p>Верю в то, что хороший дизайн — это не украшение, а язык. Каждый пиксель должен работать: передавать смысл, направлять внимание, вызывать эмоцию.</p>
-      <p>Инструменты: Figma, Adobe Illustrator, Photoshop, CapCut. Каждый проект — это продуманная система, а не набор красивых картинок.</p>
-      <p>Открыт к нестандартным задачам — от айдентики стартапа до визуальной концепции целого продукта. Если проект амбициозный — мне по пути.</p>
-    </div>
-    <div class="about-stats reveal reveal-d3">
-      <div class="stat">
-        <div class="stat-num">4+</div>
-        <div class="stat-label">Years experience</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">50+</div>
-        <div class="stat-label">Projects done</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">20+</div>
-        <div class="stat-label">Happy clients</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">4</div>
-        <div class="stat-label">Directions</div>
-      </div>
-    </div>
-  </div>
+  <div class="hero-scroll">scroll</div>
 </section>
 
 <div class="line"></div>
 
-<!-- WORKS -->
-<section id="works">
-  <div class="section-label reveal">// 02 — Works</div>
-  <h2 class="section-title reveal reveal-d1">Selected Projects</h2>
-  <div class="works-filter reveal reveal-d2">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="ui">UI / UX</button>
-    <button class="filter-btn" data-filter="graphic">Graphic</button>
-    <button class="filter-btn" data-filter="gamedev">Game Dev</button>
-    <button class="filter-btn" data-filter="motion">Motion</button>
+<!-- WORKS — HORIZONTAL SCROLL -->
+<section class="works-section" id="works">
+  <div class="works-header">
+    <div class="section-label reveal">// 02 — Works</div>
+    <h2 class="section-title reveal">Selected <span class="lime">Projects</span></h2>
   </div>
-  <div class="works-grid">
-
-    <div class="work-item reveal" data-cat="ui">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">UI / UX</div>
-        <div class="work-title">Mobile Banking App</div>
+  <div class="works-track-wrap">
+    <div class="works-track" id="worksTrack">
+      <div class="work-card">
+        <div class="work-card-inner"><span>Project Image</span><div class="work-card-glow"></div></div>
+        <div class="work-card-info">
+          <div><div class="work-card-cat">Branding</div><div class="work-card-title">Brand Identity System</div></div>
+          <div class="work-card-num">01</div>
+        </div>
+      </div>
+      <div class="work-card">
+        <div class="work-card-inner"><span>Project Image</span><div class="work-card-glow"></div></div>
+        <div class="work-card-info">
+          <div><div class="work-card-cat">Game Dev Art</div><div class="work-card-title">Character Concept Art</div></div>
+          <div class="work-card-num">02</div>
+        </div>
+      </div>
+      <div class="work-card">
+        <div class="work-card-inner"><span>Project Image</span><div class="work-card-glow"></div></div>
+        <div class="work-card-info">
+          <div><div class="work-card-cat">Illustration</div><div class="work-card-title">Dark Fantasy Series</div></div>
+          <div class="work-card-num">03</div>
+        </div>
+      </div>
+      <div class="work-card">
+        <div class="work-card-inner"><span>Project Image</span><div class="work-card-glow"></div></div>
+        <div class="work-card-info">
+          <div><div class="work-card-cat">Motion</div><div class="work-card-title">Product Launch Video</div></div>
+          <div class="work-card-num">04</div>
+        </div>
+      </div>
+      <div class="work-card">
+        <div class="work-card-inner"><span>Project Image</span><div class="work-card-glow"></div></div>
+        <div class="work-card-info">
+          <div><div class="work-card-cat">Branding</div><div class="work-card-title">Event Poster Series</div></div>
+          <div class="work-card-num">05</div>
+        </div>
+      </div>
+      <div class="work-card">
+        <div class="work-card-inner"><span>Project Image</span><div class="work-card-glow"></div></div>
+        <div class="work-card-info">
+          <div><div class="work-card-cat">Game Dev Art</div><div class="work-card-title">Environment Design</div></div>
+          <div class="work-card-num">06</div>
+        </div>
       </div>
     </div>
-
-    <div class="work-item reveal" data-cat="graphic">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">Graphic Design</div>
-        <div class="work-title">Brand Identity System</div>
-      </div>
-    </div>
-
-    <div class="work-item reveal" data-cat="gamedev">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">Game Dev Art</div>
-        <div class="work-title">Character Concept Art</div>
-      </div>
-    </div>
-
-    <div class="work-item reveal" data-cat="motion">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">Motion Design</div>
-        <div class="work-title">Product Launch Video</div>
-      </div>
-    </div>
-
-    <div class="work-item reveal" data-cat="ui">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">UI / UX</div>
-        <div class="work-title">E-Commerce Dashboard</div>
-      </div>
-    </div>
-
-    <div class="work-item reveal" data-cat="graphic">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">Graphic Design</div>
-        <div class="work-title">Event Poster Series</div>
-      </div>
-    </div>
-
-    <div class="work-item reveal" data-cat="gamedev">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">Game Dev Art</div>
-        <div class="work-title">Environment Design</div>
-      </div>
-    </div>
-
-    <div class="work-item reveal" data-cat="motion">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">Motion Design</div>
-        <div class="work-title">Social Media Animations</div>
-      </div>
-    </div>
-
-    <div class="work-item reveal" data-cat="ui">
-      <div class="work-placeholder"><span>Project Image</span></div>
-      <div class="work-overlay">
-        <div class="work-cat">UI / UX</div>
-        <div class="work-title">SaaS Landing Page</div>
-      </div>
-    </div>
-
+    <div class="works-counter"><span class="current">01</span> / 06</div>
   </div>
 </section>
-
-<div class="line"></div>
-
-<!-- MARQUEE 2 -->
-<div class="marquee-strip">
-  <div class="marquee-track" style="animation-direction:reverse">
-    <span>FIGMA</span><span>ILLUSTRATOR</span><span>PHOTOSHOP</span><span>CAPCUT</span><span>AFTER EFFECTS</span><span>BLENDER</span>
-    <span>FIGMA</span><span>ILLUSTRATOR</span><span>PHOTOSHOP</span><span>CAPCUT</span><span>AFTER EFFECTS</span><span>BLENDER</span>
-  </div>
-</div>
 
 <!-- CONTACT -->
 <section id="contact" class="contact-section">
   <div class="section-label reveal">// 03 — Contact</div>
-  <h2 class="contact-mega reveal reveal-d1">LET'S <span class="outline">BUILD</span><br>SOMETHING <span class="lime">GREAT</span></h2>
+  <h2 class="contact-mega reveal">LET'S <span class="lime">BUILD</span><br>SOMETHING <span class="lime">GREAT</span></h2>
   <div class="contact-channels">
-    <a href="https://t.me/Chillcrush" target="_blank" class="contact-card reveal reveal-d1">
+    <a href="https://t.me/Chillcrush" target="_blank" class="contact-card">
       <div class="cc-arrow">&nearr;</div>
       <div class="cc-icon">&rsaquo;&rsaquo;</div>
       <div class="cc-label">Telegram</div>
       <div class="cc-value">@Chillcrush</div>
     </a>
-    <a href="https://www.linkedin.com/in/timue-djalilov" target="_blank" class="contact-card reveal reveal-d2">
+    <a href="https://www.linkedin.com/in/timue-djalilov" target="_blank" class="contact-card">
       <div class="cc-arrow">&nearr;</div>
       <div class="cc-icon">in</div>
       <div class="cc-label">LinkedIn</div>
       <div class="cc-value">Timue Djalilov</div>
     </a>
-    <a href="mailto:vladt764@gmail.com" class="contact-card reveal reveal-d3">
+    <a href="mailto:vladt764@gmail.com" class="contact-card">
       <div class="cc-arrow">&nearr;</div>
       <div class="cc-icon">@</div>
       <div class="cc-label">Email</div>
@@ -423,21 +319,18 @@ footer{padding:20px 48px;display:flex;justify-content:space-between;align-items:
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
+<!-- CINEMATIC FOOTER -->
+<div class="footer-big">
+  <div class="footer-big-text" id="footerBigText">DRMN</div>
+</div>
+<footer class="footer-bottom">
   <span class="footer-logo">DRMN</span>
   <div class="footer-links">
-    <a href="#about">About</a>
     <a href="#works">Works</a>
     <a href="#contact">Contact</a>
   </div>
   <span class="footer-copy">&copy; 2025 Dorimenos</span>
 </footer>
-
-<!-- Grain overlay -->
-<div class="grain"></div>
-<!-- Custom cursor -->
-<div class="cursor"></div>
 
 <!-- GSAP + ScrollTrigger + Lenis -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
@@ -445,411 +338,299 @@ footer{padding:20px 48px;display:flex;justify-content:space-between;align-items:
 <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
 
 <script>
-// ── SMOOTH SCROLL (Lenis) ──
-const lenis = new Lenis({ lerp: 0.07, smoothWheel: true });
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add((time) => lenis.raf(time * 1000));
-gsap.ticker.lagSmoothing(0);
-
-// Nav links smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) lenis.scrollTo(target, { offset: -80 });
-  });
-});
-
 gsap.registerPlugin(ScrollTrigger);
 
-// ── CUSTOM CURSOR ──
-const cursor = document.querySelector('.cursor');
-let cursorX = 0, cursorY = 0;
-document.addEventListener('mousemove', e => { cursorX = e.clientX; cursorY = e.clientY; });
-gsap.ticker.add(() => {
-  gsap.set(cursor, { x: cursorX, y: cursorY });
-});
-document.querySelectorAll('a, button, .work-item, .contact-card').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-});
-
-// ── MAGNETIC EFFECT ──
-document.querySelectorAll('.hero-tag, .filter-btn, .contact-card, .nav-links a, .footer-links a').forEach(el => {
-  el.classList.add('magnetic');
-  el.addEventListener('mousemove', e => {
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
-    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
-    gsap.to(el, { x, y, duration: 0.3, ease: 'power2.out' });
-  });
-  el.addEventListener('mouseleave', () => {
-    gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1,0.4)' });
-  });
-});
-
-// ── HERO ANIMATIONS ──
-const heroTL = gsap.timeline({ delay: 0.3 });
-
-// Label — text scramble
-heroTL.to('.hero-label', {
-  opacity: 1, duration: 0.8, ease: 'power2.out',
-  onStart: function() {
-    const el = document.querySelector('.hero-label');
-    const final = el.textContent;
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
-    let iteration = 0;
-    const interval = setInterval(() => {
-      el.textContent = final.split('').map((ch, i) => {
-        if (i < iteration) return final[i];
-        return chars[Math.floor(Math.random() * chars.length)];
-      }).join('');
-      iteration += 1 / 2;
-      if (iteration >= final.length) { clearInterval(interval); el.textContent = final; }
-    }, 30);
-  }
-});
-
-// Sub
-heroTL.to('.hero-sub', {
-  opacity: 1, duration: 0.8, ease: 'power2.out'
-}, '-=0.2');
-
-// Tags
-heroTL.to('.hero-tag', {
-  opacity: 1, translateY: 0,
-  stagger: 0.1, duration: 0.6, ease: 'power3.out'
-}, '-=0.3');
-
-// ── HERO LETTER SCATTER ──
-const heroNameEl = document.getElementById('heroName');
-const heroText = 'DORIMENOS';
-const limeStart = 4; // "MENOS" starts at index 4
-
-// Split into individual letter spans
-heroNameEl.innerHTML = heroText.split('').map((ch, i) => {
-  const cls = i >= limeStart ? 'hero-char lime' : 'hero-char';
-  return `<span class="${cls}" data-char="${ch}">${ch}</span>`;
-}).join('');
-
-const heroChars = heroNameEl.querySelectorAll('.hero-char');
-let isHovering = false;
-let mouseX = 0, mouseY = 0;
-let rafId = null;
-
-// SVG turbulence refs
-const turbNoise = document.getElementById('turbNoise');
-const turbDisplace = document.getElementById('turbDisplace');
-
-heroNameEl.addEventListener('mouseenter', () => {
-  isHovering = true;
-  // Animate SVG turbulence in
-  gsap.to(turbNoise, { attr: { baseFrequency: 0.015 }, duration: 0.3 });
-  gsap.to(turbDisplace, { attr: { scale: 12 }, duration: 0.3 });
-  heroNameEl.style.filter = 'url(#turbulence-filter)';
-  animateScatter();
-});
-
-heroNameEl.addEventListener('mouseleave', () => {
-  isHovering = false;
-  // Snap back with elastic
-  heroChars.forEach(ch => {
-    gsap.to(ch, {
-      x: 0, y: 0, rotation: 0, scale: 1,
-      duration: 0.8, ease: 'elastic.out(1,0.3)',
-      delay: Math.random() * 0.1
-    });
-  });
-  // Fade out turbulence
-  gsap.to(turbNoise, { attr: { baseFrequency: 0 }, duration: 0.5 });
-  gsap.to(turbDisplace, { attr: { scale: 0 }, duration: 0.5, onComplete: () => {
-    heroNameEl.style.filter = 'none';
-  }});
-});
-
-heroNameEl.addEventListener('mousemove', e => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-});
-
-function animateScatter() {
-  if (!isHovering) return;
-
-  heroChars.forEach(ch => {
-    const rect = ch.getBoundingClientRect();
-    const charCX = rect.left + rect.width / 2;
-    const charCY = rect.top + rect.height / 2;
-
-    const dx = charCX - mouseX;
-    const dy = charCY - mouseY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const maxDist = 250;
-
-    if (dist < maxDist) {
-      const force = (1 - dist / maxDist) * 60;
-      const angle = Math.atan2(dy, dx);
-      const targetX = Math.cos(angle) * force;
-      const targetY = Math.sin(angle) * force;
-      const targetRot = (Math.random() - 0.5) * force * 0.8;
-      const targetScale = 1 + (1 - dist / maxDist) * 0.25;
-
-      gsap.to(ch, {
-        x: targetX, y: targetY,
-        rotation: targetRot,
-        scale: targetScale,
-        duration: 0.25, ease: 'power2.out', overwrite: true
-      });
-    } else {
-      gsap.to(ch, {
-        x: 0, y: 0, rotation: 0, scale: 1,
-        duration: 0.4, ease: 'power2.out', overwrite: true
-      });
+// ═══════════════════════════════════
+// FLOATING PARTICLES (embers)
+// ═══════════════════════════════════
+const particlesContainer = document.getElementById('particles');
+const emberColors = ['#BEFF3B', '#F59E0B', '#BEFF3B', '#F59E0B', '#BEFF3B'];
+for (let i = 0; i < 55; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const color = emberColors[Math.floor(Math.random() * emberColors.length)];
+  const size = (1 + Math.random() * 3) + 'px';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.top = (60 + Math.random() * 40) + '%';
+  p.style.background = color;
+  p.style.color = color;
+  p.style.width = size;
+  p.style.height = size;
+  particlesContainer.appendChild(p);
+  const dur = 8 + Math.random() * 14;
+  gsap.to(p, {
+    y: -(200 + Math.random() * 500),
+    x: (Math.random() - 0.5) * 120,
+    opacity: Math.random() * 0.5 + 0.15,
+    duration: dur,
+    ease: 'none',
+    repeat: -1,
+    delay: Math.random() * 10,
+    onRepeat() {
+      gsap.set(p, { y: 0, x: 0, top: (70 + Math.random() * 30) + '%', left: Math.random() * 100 + '%' });
     }
   });
-
-  // Jitter the turbulence seed for organic feel
-  turbNoise.setAttribute('seed', Math.floor(Math.random() * 100));
-
-  rafId = requestAnimationFrame(animateScatter);
+  // flicker effect — dark fantasy ember glow
+  gsap.to(p, {
+    opacity: '+=' + (Math.random() * 0.2),
+    duration: 0.3 + Math.random() * 0.8,
+    ease: 'power1.inOut',
+    repeat: -1,
+    yoyo: true,
+    delay: Math.random() * 3
+  });
 }
 
-// ── SECTION REVEALS ──
-document.querySelectorAll('section:not(.hero) .reveal').forEach(el => {
-  gsap.to(el, {
-    opacity: 1, y: 0,
-    duration: 0.9, ease: 'power3.out',
-    scrollTrigger: { trigger: el, start: 'top 85%', once: true }
-  });
+// ═══════════════════════════════════
+// PRELOADER
+// ═══════════════════════════════════
+const preloader = document.getElementById('preloader');
+const plChars = document.querySelectorAll('.pl-char');
+const plLine = document.getElementById('preloaderLine');
+const curtainL = document.getElementById('curtainL');
+const curtainR = document.getElementById('curtainR');
+const glitchChars = 'ΔΩψξ∆∇◊†‡¤§¶░▒▓█';
+const preloaderTL = gsap.timeline();
+
+// Phase 1: each letter materializes with glitch scramble
+plChars.forEach((ch, i) => {
+  const final = ch.textContent;
+  preloaderTL.to(ch, {
+    opacity: 1, duration: 0.05,
+    onStart() {
+      let count = 0;
+      const iv = setInterval(() => {
+        ch.textContent = glitchChars[Math.floor(Math.random() * glitchChars.length)];
+        count++;
+        if (count > 6) { clearInterval(iv); ch.textContent = final; }
+      }, 50);
+    }
+  }, i * 0.18);
 });
 
-// ── LINE DRAW ──
-document.querySelectorAll('.line').forEach(line => {
-  gsap.to(line, {
-    scaleX: 1, duration: 1.2, ease: 'power2.inOut',
-    scrollTrigger: { trigger: line, start: 'top 90%', once: true }
+// Phase 2: brief pause — tension
+preloaderTL
+  .to({}, { duration: 0.5 })
+  // Phase 4: curtains split open like dark portal
+  .to('.preloader-center', { opacity: 0, scale: 0.8, duration: 0.3, ease: 'power2.in' })
+  .to(curtainL, { xPercent: -100, duration: 0.8, ease: 'power4.inOut' }, '-=.1')
+  .to(curtainR, { xPercent: 100, duration: 0.8, ease: 'power4.inOut',
+    onComplete: () => {
+      preloader.style.display = 'none';
+      document.body.classList.remove('loading');
+      startSite();
+    }
+  }, '<');
+
+function startSite() {
+  // ═══════════════════════════════════
+  // SMOOTH SCROLL
+  // ═══════════════════════════════════
+  const lenis = new Lenis({ lerp: 0.07, smoothWheel: true });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) lenis.scrollTo(target, { offset: -80 });
+    });
   });
-});
 
-// ── STAT SLOT MACHINE ──
-document.querySelectorAll('.stat-num').forEach(el => {
-  const text = el.textContent.trim();
-  const num = parseInt(text);
-  const suffix = text.replace(/[0-9]/g, '');
-
-  // Build slot: random digits then final number
-  const totalSlots = 12;
-  let slotHTML = '';
-  for (let i = 0; i < totalSlots; i++) {
-    const val = i < totalSlots - 1 ? Math.floor(Math.random() * 99) : num;
-    slotHTML += `<div class="digit">${val}${suffix}</div>`;
-  }
-  el.innerHTML = `<div class="stat-slot">${slotHTML}</div>`;
-  const slot = el.querySelector('.stat-slot');
-
+  // ═══════════════════════════════════
+  // SCROLL PROGRESS
+  // ═══════════════════════════════════
+  const progressBar = document.getElementById('scrollProgress');
   ScrollTrigger.create({
-    trigger: el, start: 'top 85%', once: true,
-    onEnter: () => {
-      gsap.to(el, { opacity: 1, duration: 0.2 });
-      const digitH = 3.2 * parseFloat(getComputedStyle(document.documentElement).fontSize);
-      gsap.to(slot, {
-        y: -(totalSlots - 1) * digitH,
-        duration: 1.8,
-        ease: 'power4.out'
-      });
-    }
+    onUpdate: self => { progressBar.style.width = (self.progress * 100) + '%'; },
+    start: 'top top', end: 'bottom bottom', scrub: true
   });
-});
 
-// ── WORKS STAGGERED REVEAL ──
-ScrollTrigger.batch('.work-item', {
-  start: 'top 88%',
-  once: true,
-  onEnter: batch => {
-    gsap.to(batch, {
-      opacity: 1, scale: 1, y: 0,
-      stagger: 0.08, duration: 0.7, ease: 'power3.out'
-    });
+  // ═══════════════════════════════════
+  // CURSOR + TRAIL
+  // ═══════════════════════════════════
+  const cursor = document.getElementById('cursor');
+  let cx = 0, cy = 0;
+  const trails = [];
+  for (let i = 0; i < 5; i++) {
+    const t = document.createElement('div');
+    t.className = 'cursor-trail';
+    t.style.opacity = (1 - i / 5) * 0.25;
+    document.body.appendChild(t);
+    trails.push({ el: t, x: 0, y: 0 });
   }
-});
-
-// ── WORKS 3D TILT + GLOW ──
-document.querySelectorAll('.work-item').forEach(item => {
-  // Add glow element
-  const glow = document.createElement('div');
-  glow.className = 'work-glow';
-  item.appendChild(glow);
-
-  item.addEventListener('mousemove', e => {
-    const rect = item.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    const rotY = (x - 0.5) * 20;
-    const rotX = (0.5 - y) * 20;
-
-    gsap.to(item, {
-      rotateX: rotX, rotateY: rotY,
-      duration: 0.4, ease: 'power2.out', overwrite: true
+  document.addEventListener('mousemove', e => { cx = e.clientX; cy = e.clientY; });
+  gsap.ticker.add(() => {
+    gsap.set(cursor, { x: cx, y: cy });
+    trails.forEach((t, i) => {
+      const prev = i === 0 ? { x: cx, y: cy } : trails[i - 1];
+      t.x += (prev.x - t.x) * 0.2;
+      t.y += (prev.y - t.y) * 0.2;
+      gsap.set(t.el, { x: t.x, y: t.y });
     });
-
-    // Move glow to follow cursor
-    glow.style.opacity = 1;
-    glow.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(190,255,59,.2) 0%, transparent 60%)`;
+  });
+  document.querySelectorAll('a, button, .work-card, .contact-card').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
   });
 
-  item.addEventListener('mouseleave', () => {
-    gsap.to(item, {
-      rotateX: 0, rotateY: 0,
-      duration: 0.6, ease: 'elastic.out(1,0.5)', overwrite: true
+  // ═══════════════════════════════════
+  // BLOBS
+  // ═══════════════════════════════════
+  gsap.to('.blob-1', { x: 100, y: 80, duration: 18, ease: 'sine.inOut', repeat: -1, yoyo: true });
+  gsap.to('.blob-2', { x: -80, y: -60, duration: 22, ease: 'sine.inOut', repeat: -1, yoyo: true });
+  gsap.to('.blob-3', { x: 60, y: -100, duration: 25, ease: 'sine.inOut', repeat: -1, yoyo: true });
+
+  // ═══════════════════════════════════
+  // MAGNETIC
+  // ═══════════════════════════════════
+  document.querySelectorAll('.hero-tag, .contact-card, .nav-links a, .footer-links a').forEach(el => {
+    el.classList.add('magnetic');
+    el.addEventListener('mousemove', e => {
+      const rect = el.getBoundingClientRect();
+      gsap.to(el, { x: (e.clientX - rect.left - rect.width / 2) * 0.3, y: (e.clientY - rect.top - rect.height / 2) * 0.3, duration: 0.3, ease: 'power2.out' });
     });
-    glow.style.opacity = 0;
+    el.addEventListener('mouseleave', () => gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1,0.4)' }));
   });
-});
 
-// ── CONTACT CARDS 3D REVEAL ──
-ScrollTrigger.batch('.contact-card', {
-  start: 'top 85%',
-  once: true,
-  onEnter: batch => {
-    gsap.to(batch, {
-      opacity: 1, rotateX: 0, y: 0,
-      stagger: 0.12, duration: 0.9, ease: 'power3.out'
+  // ═══════════════════════════════════
+  // HERO
+  // ═══════════════════════════════════
+  const heroTL = gsap.timeline({ delay: 0.1 });
+  document.querySelectorAll('.fixed-label').forEach(el => {
+    const final = el.textContent;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
+    heroTL.to(el, {
+      opacity: 1, duration: 0.8, ease: 'power2.out',
+      onStart() {
+        let iter = 0;
+        const iv = setInterval(() => {
+          el.textContent = final.split('').map((c, i) => i < iter ? final[i] : chars[Math.floor(Math.random() * chars.length)]).join('');
+          iter += 0.5;
+          if (iter >= final.length) { clearInterval(iv); el.textContent = final; }
+        }, 30);
+      }
+    }, '-=.6');
+  });
+  heroTL.to('.hero-scroll', { opacity: 1, duration: .6 }, '-=.3');
+
+  // LETTER SCATTER SYSTEM
+  const turbN = document.getElementById('turbNoise'), turbD = document.getElementById('turbDisplace');
+
+  function initScatter(el, text, opts = {}) {
+    const limeFrom = opts.limeFrom || 0;
+    el.innerHTML = text.split('').map((ch, i) => `<span class="scatter-char${i >= limeFrom && limeFrom > 0 ? ' lime' : ''}" data-char="${ch}">${ch}</span>`).join('');
+    const chars = el.querySelectorAll('.scatter-char');
+    let hov = false, mx = 0, my = 0;
+    const radius = opts.radius || 250, force = opts.force || 60;
+
+    el.addEventListener('mouseenter', () => {
+      hov = true;
+      if (opts.turbulence) {
+        gsap.to(turbN, { attr: { baseFrequency: 0.015 }, duration: .3 });
+        gsap.to(turbD, { attr: { scale: 12 }, duration: .3 });
+        el.style.filter = 'url(#turbulence-filter)';
+      }
+      loop();
     });
-  }
-});
-
-// ── CONTACT CARDS LIQUID RIPPLE ──
-document.querySelectorAll('.contact-card').forEach(card => {
-  const canvas = document.createElement('canvas');
-  card.insertBefore(canvas, card.firstChild);
-  const ctx = canvas.getContext('2d');
-  let animFrame, ripples = [];
-
-  function resizeCanvas() {
-    const rect = card.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-  }
-
-  card.addEventListener('mouseenter', e => {
-    resizeCanvas();
-    ripples = [];
-    const rect = card.getBoundingClientRect();
-    ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, r: 0, alpha: 1 });
-    drawRipples();
-  });
-
-  card.addEventListener('mousemove', e => {
-    const rect = card.getBoundingClientRect();
-    if (Math.random() > 0.6) {
-      ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, r: 0, alpha: 0.6 });
-    }
-  });
-
-  card.addEventListener('mouseleave', () => {
-    cancelAnimationFrame(animFrame);
-    ripples = [];
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  });
-
-  function drawRipples() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ripples.forEach((rip, i) => {
-      rip.r += 2.5;
-      rip.alpha *= 0.96;
-      if (rip.alpha < 0.01) { ripples.splice(i, 1); return; }
-      ctx.beginPath();
-      ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(190,255,59,${rip.alpha * 0.4})`;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      // Inner fill
-      ctx.beginPath();
-      ctx.arc(rip.x, rip.y, rip.r * 0.5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(190,255,59,${rip.alpha * 0.06})`;
-      ctx.fill();
-    });
-    if (ripples.length) animFrame = requestAnimationFrame(drawRipples);
-  }
-});
-
-// ── SECTION TITLE WIPE REVEAL ──
-document.querySelectorAll('.section-title').forEach(title => {
-  const mask = document.createElement('div');
-  mask.className = 'title-mask';
-  title.appendChild(mask);
-
-  ScrollTrigger.create({
-    trigger: title, start: 'top 80%', once: true,
-    onEnter: () => {
-      gsap.to(mask, {
-        width: '0%', duration: 1.2, ease: 'power4.inOut',
-        delay: 0.2
-      });
-    }
-  });
-});
-
-// ── ABOUT TEXT LINE-BY-LINE GLOW ──
-document.querySelectorAll('.about-text p').forEach(p => {
-  p.addEventListener('mouseenter', () => {
-    gsap.to(p, { color: 'var(--white)', x: 8, duration: 0.3, ease: 'power2.out' });
-  });
-  p.addEventListener('mouseleave', () => {
-    gsap.to(p, { color: 'var(--gray)', x: 0, duration: 0.4, ease: 'power2.out' });
-  });
-});
-
-// ── PARALLAX on section labels ──
-document.querySelectorAll('.section-label, .section-title, .contact-mega').forEach(el => {
-  gsap.to(el, {
-    yPercent: -15,
-    scrollTrigger: {
-      trigger: el, start: 'top bottom', end: 'bottom top',
-      scrub: 1
-    }
-  });
-});
-
-// ── NAV HIDE/SHOW on scroll ──
-let lastScroll = 0;
-ScrollTrigger.create({
-  onUpdate: self => {
-    const nav = document.querySelector('nav');
-    if (self.direction === 1 && self.scroll() > 200) {
-      gsap.to(nav, { y: -100, duration: 0.4, ease: 'power2.in' });
-    } else {
-      gsap.to(nav, { y: 0, duration: 0.3, ease: 'power2.out' });
-    }
-  }
-});
-
-// ── MARQUEE speed on scroll ──
-document.querySelectorAll('.marquee-track').forEach(track => {
-  gsap.to(track, {
-    xPercent: -3,
-    scrollTrigger: {
-      trigger: track.parentElement,
-      start: 'top bottom', end: 'bottom top',
-      scrub: 0.5
-    }
-  });
-});
-
-// ── FILTER WORKS ──
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const f = btn.dataset.filter;
-    document.querySelectorAll('.work-item').forEach(item => {
-      if (f === 'all' || item.dataset.cat === f) {
-        gsap.to(item, { opacity: 1, scale: 1, display: 'block', duration: 0.4, ease: 'power2.out' });
-      } else {
-        gsap.to(item, { opacity: 0, scale: 0.9, duration: 0.3, ease: 'power2.in', onComplete: () => item.style.display = 'none' });
+    el.addEventListener('mouseleave', () => {
+      hov = false;
+      chars.forEach(c => gsap.to(c, { x: 0, y: 0, rotation: 0, scale: 1, duration: .8, ease: 'elastic.out(1,0.3)', delay: Math.random() * .1 }));
+      if (opts.turbulence) {
+        gsap.to(turbN, { attr: { baseFrequency: 0 }, duration: .5 });
+        gsap.to(turbD, { attr: { scale: 0 }, duration: .5, onComplete: () => el.style.filter = 'none' });
       }
     });
+    el.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+    function loop() {
+      if (!hov) return;
+      chars.forEach(c => {
+        const r = c.getBoundingClientRect();
+        const dx = r.left + r.width / 2 - mx, dy = r.top + r.height / 2 - my, dist = Math.hypot(dx, dy);
+        if (dist < radius) {
+          const f = (1 - dist / radius) * force, a = Math.atan2(dy, dx);
+          gsap.to(c, { x: Math.cos(a) * f, y: Math.sin(a) * f, rotation: (Math.random() - .5) * f * .8, scale: 1 + (1 - dist / radius) * .25, duration: .25, ease: 'power2.out', overwrite: true });
+        } else gsap.to(c, { x: 0, y: 0, rotation: 0, scale: 1, duration: .4, ease: 'power2.out', overwrite: true });
+      });
+      if (opts.turbulence) turbN.setAttribute('seed', Math.floor(Math.random() * 100));
+      requestAnimationFrame(loop);
+    }
+  }
+
+  // Hero — DORIMENOS
+  initScatter(document.getElementById('heroName'), 'DORIMENOS', { limeFrom: 4, turbulence: true });
+  // Nav logo — DRMN
+  initScatter(document.querySelector('.nav-logo'), 'DRMN', { radius: 120, force: 30 });
+  // Footer bottom logo — DRMN
+  initScatter(document.querySelector('.footer-logo'), 'DRMN', { radius: 120, force: 30 });
+
+  // ═══════════════════════════════════
+  // REVEALS
+  // ═══════════════════════════════════
+  document.querySelectorAll('.reveal').forEach(el => {
+    gsap.to(el, { opacity: 1, y: 0, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
   });
-});
+  document.querySelectorAll('.section-title').forEach(t => {
+    const mask = document.createElement('div'); mask.className = 'title-mask'; t.appendChild(mask);
+    ScrollTrigger.create({ trigger: t, start: 'top 80%', once: true, onEnter: () => gsap.to(mask, { width: '0%', duration: 1.2, ease: 'power4.inOut', delay: .2 }) });
+  });
+  document.querySelectorAll('.line').forEach(l => {
+    gsap.to(l, { scaleX: 1, duration: 1.2, ease: 'power2.inOut', scrollTrigger: { trigger: l, start: 'top 90%', once: true } });
+  });
+
+
+  // ═══════════════════════════════════
+  // HORIZONTAL SCROLL WORKS
+  // ═══════════════════════════════════
+  const track = document.getElementById('worksTrack'), cards = track.querySelectorAll('.work-card'), counterEl = document.querySelector('.works-counter .current');
+  gsap.to(track, {
+    x: () => -(track.scrollWidth - window.innerWidth + 48), ease: 'none',
+    scrollTrigger: { trigger: '.works-section', pin: true, scrub: 1, end: () => '+=' + (track.scrollWidth - window.innerWidth),
+      onUpdate: self => { counterEl.textContent = String(Math.min(cards.length, Math.floor(self.progress * cards.length) + 1)).padStart(2, '0'); }
+    }
+  });
+  cards.forEach(card => {
+    const inner = card.querySelector('.work-card-inner'), glow = card.querySelector('.work-card-glow');
+    card.addEventListener('mousemove', e => {
+      const rect = inner.getBoundingClientRect(), px = (e.clientX - rect.left) / rect.width, py = (e.clientY - rect.top) / rect.height;
+      gsap.to(inner, { rotateY: (px - .5) * 15, rotateX: (.5 - py) * 15, duration: .4, ease: 'power2.out', overwrite: true });
+      glow.style.opacity = 1;
+      glow.style.background = `radial-gradient(circle at ${px * 100}% ${py * 100}%, rgba(190,255,59,.12) 0%, transparent 60%)`;
+    });
+    card.addEventListener('mouseleave', () => { gsap.to(inner, { rotateX: 0, rotateY: 0, duration: .6, ease: 'elastic.out(1,.5)', overwrite: true }); glow.style.opacity = 0; });
+  });
+
+  // ═══════════════════════════════════
+  // CONTACT
+  // ═══════════════════════════════════
+  ScrollTrigger.batch('.contact-card', { start: 'top 85%', once: true, onEnter: batch => gsap.to(batch, { opacity: 1, rotateX: 0, y: 0, stagger: .12, duration: .9, ease: 'power3.out' }) });
+  document.querySelectorAll('.contact-card').forEach(card => {
+    const canvas = document.createElement('canvas'); card.insertBefore(canvas, card.firstChild);
+    const ctx = canvas.getContext('2d'); let af, ripples = [];
+    card.addEventListener('mouseenter', e => { const r = card.getBoundingClientRect(); canvas.width = r.width; canvas.height = r.height; ripples = [{ x: e.clientX - r.left, y: e.clientY - r.top, r: 0, a: 1 }]; draw(); });
+    card.addEventListener('mousemove', e => { const r = card.getBoundingClientRect(); if (Math.random() > .6) ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, r: 0, a: .6 }); });
+    card.addEventListener('mouseleave', () => { cancelAnimationFrame(af); ripples = []; ctx.clearRect(0, 0, canvas.width, canvas.height); });
+    function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); ripples.forEach((rip, i) => { rip.r += 2.5; rip.a *= .96; if (rip.a < .01) { ripples.splice(i, 1); return; } ctx.beginPath(); ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2); ctx.strokeStyle = `rgba(190,255,59,${rip.a * .3})`; ctx.lineWidth = 1.5; ctx.stroke(); }); if (ripples.length) af = requestAnimationFrame(draw); }
+  });
+
+  // ═══════════════════════════════════
+  // NAV / MARQUEE / PARALLAX / FOOTER
+  // ═══════════════════════════════════
+  const nav = document.getElementById('mainNav');
+  ScrollTrigger.create({ onUpdate: self => { gsap.to(nav, self.direction === 1 && self.scroll() > 200 ? { y: -100, duration: .4, ease: 'power2.in' } : { y: 0, duration: .3, ease: 'power2.out' }); } });
+
+
+  document.querySelectorAll('.section-label, .contact-mega').forEach(el => {
+    gsap.to(el, { yPercent: -15, scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1 } });
+  });
+
+  const footerText = document.getElementById('footerBigText');
+  gsap.to(footerText, { yPercent: -20, scale: 1.1, scrollTrigger: { trigger: '.footer-big', start: 'top bottom', end: 'bottom bottom', scrub: 1 } });
+  gsap.to(footerText, { letterSpacing: '20px', scrollTrigger: { trigger: '.footer-big', start: 'top 80%', end: 'bottom bottom', scrub: 1 } });
+}
 </script>
 </body>
 </html>
